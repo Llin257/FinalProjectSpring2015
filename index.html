@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-latest.min.js">
+		</script>
+		<link rel="stylesheet" media="screen" href="tabsfinal.css">
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+		<div id="logo">
+		<h1><span>VAKAYPIC(K)S</span></h1>
+    	<h4><span> ~ ~Decide your next vacation! ~ ~ </span></h4>
+    	</div>
+    	<p class="but">
+    		<a class= "btn1" href="Final/Welcome.html"> Welcome </a> 
+    		<a class= "btn2" href="Final/AboutFinal.html"> About/Future Direction </a> 
+    	</p>
+    	<script>
+			$(document).ready(function(){
+				$( "form" ).submit(function( event ) {
+				  event.preventDefault();
+				  var city = $("#cityName").val();
+				  var date = $("#date").val();
+				  console.log($("#cityName").val())
+
+				makegeocodedata(city,date)
+				});
+			});
+		</script>
+		<script type="text/javascript">
+		var makegeocodedata = function(cityName, date){
+			var geocoder = new google.maps.Geocoder();
+			var address = cityName;	
+
+			geocoder.geocode( { 'address': address}, function(results, status) {
+
+  			if (status == google.maps.GeocoderStatus.OK) {
+    		var latitude = results[0].geometry.location.lat();
+    		var longitude = results[0].geometry.location.lng();
+    		console.log(latitude);
+    		console.log(longitude);
+
+    		getInstagramData(latitude, longitude, date);
+
+  		} 
+		}); 
+		};
+
+
+		var getInstagramData = function(latitude, longitude,date) {
+		//var myDate = prompt("Pick a date!(Please format according to example: May 5, 2013 02:24:00)");
+			var myDate = new Date(date); 
+			var myEpoch = myDate.getTime()/1000.0;
+			//document.write(myEpoch);
+			var maxtime= myEpoch+2629743;
+			//document.write(maxtime);
+			console.log(latitude,longitude,date);
+	      	//$.getJSON("http://cooper-union-instagram-proxy.herokuapp.com/search/media?lat="+latitude+"&lng="+longitude+"&max_timestamp="+myEpoch, function(response){""
+	      	
+	      	var instagramurl = "http://cooper-union-instagram-proxy.herokuapp.com/search/media?lat="+latitude+ "&lng="+longitude+"&max_timestamp="+myEpoch;
+
+	      	console.log(instagramurl);
+	      	$.getJSON(instagramurl, function(response){
+	        console.log(response);
+        	for(var i=0; i<response.length; i++) {
+
+
+        		var image = "<img class='photos' data-url="+response[i].link+" src="+response[i].images.thumbnail.url+" />";
+          	$("body").append(image);
+	   		}
+	   	
+	   		$(".photos").each(function(){
+	   			$(this).click(function(){
+	   				window.open($(this).attr("data-url"))
+	   			})
+	   		})
+
+	    	});
+      	}	
+
+		</script>
+		<style>
+			body {
+				background-color:gainsboro;
+			}
+		</style>
+
+
+	</head>
+	<body>
+		<form>
+			<div class ="datelocation">
+			<h3> Enter your desired location(city) </h3>
+			<input id="cityName" type="text" name="city"/>
+			<h3> Enter a date </h3>
+			<input id="date" type="date" name="dateenter" />
+			<p></p>
+			<input id="submitButton" type="submit" />
+			</div>
+			<p></p>
+			<h2> Click on photos to go to original post(enlarged version) </h2>
+		</form>
+	<div id="photostream"></div>
+
+	<div 
+    id="testing" 
+    >
+	<p style="margin-top:83px;">
+	<a 
+   href="http://www.willmaster.com/software/" 
+   style="color:red; 
+      font-size:22px; 
+      letter-spacing:-1px; 
+      text-decoration:none; 
+      font-family:sans-serif; 
+      font-weight:bold;">
+	</a>
+	</p>
+	</div>
+	<script type="text/javascript">
+
+	var imageArray = new Array();
+
+	// Specify number of milliseconds between image switches.
+	var switchMilliseconds = 6000;
+
+	var divID = 'testing';
+
+	imageArray[0] = 'http://www.thankgodimnatural.com/wp-content/uploads/2014/11/skyline-01-new-york-city.jpg';
+	imageArray[1] = 'http://www.hdwallpapers.in/walls/forbidden_city_beijing-wide.jpg';
+	imageArray[2] = 'http://www.home-hunts.net/wp-content/uploads/2013/05/Eiffel-Tower-Paris-France-Autumn.jpg';
+	imageArray[3] = 'http://www.blamethemonkey.com/wp-content/uploads/2014/01/Elia-Locardi-Travel-Photography-Roman-Radiance-Rome-Italy-1440-WM-DM-60q.jpg';
+	imageArray[4] = 'http://www.worldfortravel.com/wp-content/uploads/2013/02/Temple-in-Japanese-Kyoto-Gardens.jpg';
+	imageArray[5] = 'http://www.wallpapersdb.org/wallpapers/world/moscow_russia_1920x1200.jpg';
+
+	function publishPicture(i) {
+	document.getElementById(divID).style.backgroundImage = 'url("'+imageArray[i]+'")';
+	i++;
+	if( i > (imageArray.length - 1) ) { i = 0; }
+		setTimeout('publishPicture('+i+')',switchMilliseconds);
+		}
+	publishPicture(0);
+	</script>
+
+
+	</body>
+</html>
